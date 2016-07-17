@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+require "bundler/setup"
+require "lbp/print"
+require 'open-uri'
+require 'thor'
+
+module LbpPrintCLI
+	class Core < Thor
+		desc "version", "ask for lbp-print version"
+		def version
+		puts Lbp::Print::VERSION
+		end
+		desc "xslt_package_version_number", "get xslt package version number"
+		def xslt_package_version_number(package_path)
+			## needed /. after package_path so that I would go into the directory and then get the corrected dir name
+			xslt_package_version_number =`cd -P "$( dirname "#{package_path}/." )" && git describe --tags --always`
+		end	
+		desc "source_doc_version_number", "get source doc version number" 
+		def source_doc_version_number
+			sourceversion=`git describe --tags --always`
+		end
+		desc "tex", "creates latex output"
+		def tex (filename, type, schema, package, output_parent="examples")
+			# get output base
+			require_relative "/Users/jcwitt/.lbp-print/config"
+			puts "Output base is:" + $output_base
+			puts "==============================="
+			#output_base = "/Users/jcwitt/Desktop" # this should be gotton from config
+			output_dir = "#{$output_base}/#{output_parent}" 
+			file_full_path = "#{output_dir}/#{filename}/#{filename}.tex"
+			
+			validating_schema = schema
+			transcription_type = type
+			
+			xslt_directory = $xslt_base + "/#{package}"
+			xslt = $xslt_base + "/#{package}/#{validating_schema}/#{transcription_type}.xslt"
+			xslt_package_version_number = self.xslt_package_version_number(xslt_directory)
+
+			puts "==============================="
+			puts "xslt package version number"
+			puts xslt_package_version_number
+			puts "==============================="
+			puts "source version number"
+			source_doc_version_number = self.source_doc_version_number
+			puts self.source_doc_version_number
+
+
+			puts "==============================="
+			puts "Begin TEI to LaTeX conversion"
+      #`saxon "-s:#{filename}.xml" "-xsl:#{xslt}" "-o:#{output_dir}/#{filename}/$filename.tex" "conversionversion=$conversionversion" "sourceversion=$sourceversion";`
+      `saxon "-s:#{filename}.xml" "-xsl:#{xslt}" "-o:#{file_full_path}" "conversionversion=#{xslt_package_version_number}" "sourceversion=#{source_doc_version_number}";`
+			puts "creating file: #{file_full_path}"
+			puts "End TEI to LaTeX conversion"
+			puts "==============================="
+      self.tex_clean(file_full_path)
+		end
+		desc "tex_clean", "removes unwanted spaces from output tex file"
+		def tex_clean (file_full_path)
+			#stream edit for unwanted spaces
+  		puts "Begin removing unwanted spaces"
+  		`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' #{file_full_path}`
+  		puts "unwanted spaces removed"
+		end
+	end
+end
+			
+
+LbpPrintCLI::Core.start(ARGV)
