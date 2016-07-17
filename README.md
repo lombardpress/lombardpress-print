@@ -1,39 +1,66 @@
 # Lbp::Print
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/lbp/print`. To experiment with that code, run `bin/console` for an interactive prompt.
+This is a command line gem designed to be used with a separately installed saxon processor, a compatible xslt transformation package, and LaTeX processor.
 
-TODO: Delete this and the text above, and describe your gem
+## Pre-Reqs
+
+Install saxon with brew as follows:
+
+    $ brew install saxon
+
+Make sure you have LaTeX installed. For a Mac, we suggest installing MacTex
 
 ## Installation
 
-Add this line to your application's Gemfile:
+To install the lbp-print cli, run:
 
-```ruby
-gem 'lbp-print'
-```
+    $ gem specific_install https://github.com/lombardpress/lbp-print.git 
 
-And then execute:
+Then, 
 
-    $ bundle
+    $ cd lbp-print
+    $ bin/setup
 
-Or install it yourself as:
+Set up will create a `~/.lbp-print` with the global config file aptly named `config.rb`
 
-    $ gem install lbp-print
+In the newly created config file, you need to set two variables, `$output_base` and `$xslt_base`.
+
+`$output_base` should point to the main directory in which you want to your tex files to be saved.
+
+`$output-base` should point to the main directory where you will install available xslt packages.
+
+For example you can use the `lbp-print-xslt` for the generic lbp renderings.
+
+These stylesheets should be cloned into `$xslt_base` like so
+
+    cd <xslt_base>
+    git clone git@github.com:jeffreycwitt/lbp-print-xslt.git
+
+Anyone else can make their own stylesheets and these can then be used by the community via lbp-print cli.
 
 ## Usage
 
-TODO: Write usage instructions here
+Once set up, you can invoke a transformation as follows:
+
+`cd` into the directory containing the file you wish to convert, then run `lbp-print tex` with the appropriate parameters.
+
+    lbp-print tex <filename> <diplomatic/critical> <validating-schema-number-such-as0.0.0> <desired-xslt-package> <a-parent-folder-which-defaults-to-examples>
+
+So a real world example would be: 
+
+    lbp-print tex penn_wdr-l4d18 diplomatic 0.0.0 lbp-print-xslt rothwellcommentary
+
+## Known Available XSLT packages
+
+* git@github.com:jeffreycwitt/lbp-print-xslt.git
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/lbp-print.
+Bug reports and pull requests are welcome on GitHub at https://github.com/lombardpress/lbp-print.
 
+Anyone can create custom xslt-latex packages that can be used by this command line tool. If you created such a package, please add it to the list of Known Available XSLT packages via a pull request. An xslt package should be divided in folders named for the version of the XML schema they are designed for, and each folder should contain a file called critical.xslt or diplomatic.xslt or may include one of each.
 
 ## License
 
