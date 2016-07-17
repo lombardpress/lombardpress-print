@@ -23,8 +23,9 @@ module LbpPrintCLI
 		def tex (filename, type, schema, package, output_parent="examples")
 			# get output base
 			require_relative "/Users/jcwitt/.lbp-print/config"
-			puts "Output base is:" + $output_base
 			puts "==============================="
+			puts "Output base is:" + $output_base
+			
 			#output_base = "/Users/jcwitt/Desktop" # this should be gotton from config
 			output_dir = "#{$output_base}/#{output_parent}" 
 			file_full_path = "#{output_dir}/#{filename}/#{filename}.tex"
