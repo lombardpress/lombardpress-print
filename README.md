@@ -52,7 +52,7 @@ So a real world example would be:
 
 ## Known Available XSLT packages
 
-* git@github.com:jeffreycwitt/lbp-print-xslt.git
+* [git@github.com:jeffreycwitt/lbp-print-xslt.git](git@github.com:jeffreycwitt/lbp-print-xslt.git)
 
 ## Development
 
