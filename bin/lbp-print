@@ -59,7 +59,7 @@ module LbpPrintCLI
 		def tex_clean (file_full_path)
 			#stream edit for unwanted spaces
   		puts "Begin removing unwanted spaces"
-  		`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' #{file_full_path}`
+  		`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' -e 's/} ,/},/g' -e 's/  / /g' #{file_full_path}`
   		puts "unwanted spaces removed"
 		end
 	end
