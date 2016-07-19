@@ -44,11 +44,11 @@ Once set up, you can invoke a transformation as follows:
 
 `cd` into the directory containing the file you wish to convert, then run `lbp-print tex` with the appropriate parameters.
 
-    lbp-print tex <filename> <diplomatic/critical> <validating-schema-number-such-as0.0.0> <desired-xslt-package> <a-parent-folder-which-defaults-to-examples>
+    lbp-print tex <filename> <a-parent-folder-which-defaults-to-examples> <desired-xslt-package> <diplomatic/critical> <validating-schema-number-such-as0.0.0> 
 
 So a real world example would be: 
 
-    lbp-print tex penn_wdr-l4d18 diplomatic 0.0.0 lbp-print-xslt rothwellcommentary
+    lbp-print tex penn_wdr-l4d18 rothwellcommentary lbp-print-xslt diplomatic 0.0.0 
 
 ## Known Available XSLT packages
 

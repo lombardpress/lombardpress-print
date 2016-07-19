@@ -20,7 +20,8 @@ module LbpPrintCLI
 			sourceversion=`git describe --tags --always`
 		end
 		desc "tex", "creates latex output"
-		def tex (filename, type, schema, package, output_parent="examples")
+		option :p, :type => :boolean
+		def tex (filename, output_parent="examples", package="lbp-print-xslt", type="critical", schema="1.0.0")
 			# get output base
 			require_relative "/Users/jcwitt/.lbp-print/config"
 			puts "==============================="
@@ -54,6 +55,13 @@ module LbpPrintCLI
 			puts "End TEI to LaTeX conversion"
 			puts "==============================="
       self.tex_clean(file_full_path)
+      
+      # render pdf
+      if options[:p]
+      	Dir.chdir(output_dir + "/#{filename}/")
+      	puts "Creating PDF"
+      	`pdflatex #{file_full_path}`
+      end
 		end
 		desc "tex_clean", "removes unwanted spaces from output tex file"
 		def tex_clean (file_full_path)
