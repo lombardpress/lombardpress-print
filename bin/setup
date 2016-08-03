@@ -8,6 +8,6 @@ bundle install
 
 # Do any other automated setup that you need to do here
 
-mkdir ~/.lbp-print-cli
-echo "output_base='TODO:add/base/directory/here'" > ~/.lbp-print/config.rb
-echo "xslt_base='TODO:add/base/directory/here'" > ~/.lbp-print/config.rb
+mkdir ~/.lbp-print
+echo "output_base='TODO:add/base/directory/here'" >> ~/.lbp-print/config.rb
+echo "xslt_base='TODO:add/base/directory/here'" >> ~/.lbp-print/config.rb
