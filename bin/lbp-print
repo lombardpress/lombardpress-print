@@ -3,6 +3,7 @@ require "bundler/setup"
 require "lbp/print"
 require 'open-uri'
 require 'thor'
+require 'yaml'
 
 module LbpPrintCLI
 	class Core < Thor
@@ -22,8 +23,16 @@ module LbpPrintCLI
 		desc "tex", "creates latex output"
 		option :p, :type => :boolean
 		def tex (filename, output_parent="examples", package="lbp-print-xslt", type="critical", schema="1.0.0")
-			# get output base
-			require_relative "/Users/jcwitt/.lbp-print/config"
+
+      # Initialize config file
+      home_dir = ENV['HOME']
+      config_file = "#{home_dir}/.lbp-print/config.yaml"
+      config = YAML::load_file( config_file )
+
+      # Get config data
+      output_base = config['output_base']
+      xslt_base = config['xslt_base']
+
 			puts "==============================="
 			puts "Output base is:" + $output_base
 			
