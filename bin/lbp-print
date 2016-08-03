@@ -30,15 +30,19 @@ module LbpPrintCLI
       config = YAML::load_file( config_file )
 
       # Get config data
-      output_base = config['output_base']
-      xslt_base = config['xslt_base']
+      output_base = File.expand_path(config['output_base'])
+      xslt_base = File.expand_path(config['xslt_base'])
 
 			puts "==============================="
-			#output_base = "/Users/jcwitt/Desktop" # this should be gotton from config
-			output_dir = "#{$output_base}/#{output_parent}" 
-			file_full_path = "#{output_dir}/#{filename}/#{filename}.tex"
-			
 			puts "Output base is: #{output_base}"
+			puts "XSLT base is: #{xslt_base}"
+
+			output_dir = File.expand_path("#{output_base}/#{output_parent}")
+      puts "Output directory is: #{output_dir}"
+
+      file_basename = File.basename(filename)
+			file_full_path = File.expand_path("#{output_dir}/#{file_basename}/#{file_basename}.tex")
+
 			validating_schema = schema
 			transcription_type = type
 
