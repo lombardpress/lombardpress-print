@@ -3,39 +3,51 @@ require "bundler/setup"
 require "lbp/print"
 require 'open-uri'
 require 'thor'
+require 'yaml'
 
 module LbpPrintCLI
 	class Core < Thor
 		desc "version", "ask for lbp-print version"
 		def version
-		puts Lbp::Print::VERSION
+			puts Lbp::Print::VERSION
 		end
 		desc "xslt_package_version_number", "get xslt package version number"
 		def xslt_package_version_number(package_path)
 			## needed /. after package_path so that I would go into the directory and then get the corrected dir name
 			xslt_package_version_number =`cd -P "$( dirname "#{package_path}/." )" && git describe --tags --always`
-		end	
-		desc "source_doc_version_number", "get source doc version number" 
+		end
+		desc "source_doc_version_number", "get source doc version number"
 		def source_doc_version_number
 			sourceversion=`git describe --tags --always`
 		end
 		desc "tex", "creates latex output"
 		option :p, :type => :boolean
 		def tex (filename, output_parent="examples", package="lbp-print-xslt", type="critical", schema="1.0.0")
-			# get output base
-			require_relative "/Users/jcwitt/.lbp-print/config"
+
+			# Initialize config file
+			home_dir = ENV['HOME']
+			config_file = "#{home_dir}/.lbp-print/config.yaml"
+			config = YAML::load_file( config_file )
+
+			# Get config data
+			output_base = File.expand_path(config['output_base'])
+			xslt_base = File.expand_path(config['xslt_base'])
+
 			puts "==============================="
-			puts "Output base is:" + $output_base
-			
-			#output_base = "/Users/jcwitt/Desktop" # this should be gotton from config
-			output_dir = "#{$output_base}/#{output_parent}" 
-			file_full_path = "#{output_dir}/#{filename}/#{filename}.tex"
-			
+			puts "Output base is: #{output_base}"
+			puts "XSLT base is: #{xslt_base}"
+
+			output_dir = File.expand_path("#{output_base}/#{output_parent}")
+			puts "Output directory is: #{output_dir}"
+
+			file_basename = File.basename(filename)
+			file_full_path = File.expand_path("#{output_dir}/#{file_basename}/#{file_basename}.tex")
+
 			validating_schema = schema
 			transcription_type = type
-			
-			xslt_directory = $xslt_base + "/#{package}"
-			xslt = $xslt_base + "/#{package}/#{validating_schema}/#{transcription_type}.xslt"
+
+			xslt_directory = "#{xslt_base}/#{package}"
+			xslt = "#{xslt_base}/#{package}/#{validating_schema}/#{transcription_type}.xslt"
 			xslt_package_version_number = self.xslt_package_version_number(xslt_directory)
 
 			puts "==============================="
@@ -49,29 +61,29 @@ module LbpPrintCLI
 
 			puts "==============================="
 			puts "Begin TEI to LaTeX conversion"
-      #`saxon "-s:#{filename}.xml" "-xsl:#{xslt}" "-o:#{output_dir}/#{filename}/$filename.tex" "conversionversion=$conversionversion" "sourceversion=$sourceversion";`
-      `saxon "-s:#{filename}.xml" "-xsl:#{xslt}" "-o:#{file_full_path}" "conversionversion=#{xslt_package_version_number}" "sourceversion=#{source_doc_version_number}";`
+			#`saxon "-s:#{filename}.xml" "-xsl:#{xslt}" "-o:#{output_dir}/#{filename}/$filename.tex" "conversionversion=$conversionversion" "sourceversion=$sourceversion";`
+			`saxon "-s:#{filename}.xml" "-xsl:#{xslt}" "-o:#{file_full_path}" "conversionversion=#{xslt_package_version_number}" "sourceversion=#{source_doc_version_number}";`
 			puts "creating file: #{file_full_path}"
 			puts "End TEI to LaTeX conversion"
 			puts "==============================="
-      self.tex_clean(file_full_path)
-      
-      # render pdf
-      if options[:p]
-      	Dir.chdir(output_dir + "/#{filename}/")
-      	puts "Creating PDF"
-      	`pdflatex #{file_full_path}`
-      end
+			self.tex_clean(file_full_path)
+
+			# render pdf
+			if options[:p]
+				Dir.chdir(output_dir + "/#{filename}/")
+				puts "Creating PDF"
+				`pdflatex #{file_full_path}`
+			end
 		end
 		desc "tex_clean", "removes unwanted spaces from output tex file"
 		def tex_clean (file_full_path)
 			#stream edit for unwanted spaces
-  		puts "Begin removing unwanted spaces"
-  		`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' -e 's/} ,/},/g' -e 's/  / /g' #{file_full_path}`
-  		puts "unwanted spaces removed"
+			puts "Begin removing unwanted spaces"
+			`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' -e 's/} ,/},/g' -e 's/	 / /g' #{file_full_path}`
+			puts "unwanted spaces removed"
 		end
 	end
 end
-			
+
 
 LbpPrintCLI::Core.start(ARGV)
