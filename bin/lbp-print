@@ -51,8 +51,7 @@ module LbpPrintCLI
 				end
 			type =
 				if not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
-					Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0')
-					type.to_s
+					Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').to_s
 			  elsif config["default_params"] && config["default_params"]["type"]
           config["default_params"]["type"]
  				else
