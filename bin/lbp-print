@@ -38,24 +38,24 @@ module LbpPrintCLI
 			# Get parameters
 			
 			output_parent = 
-				if config.has_key?("output_parent")
-					config["default_params"]["output_parent"]
+				if config["default_params"] && config["default_params"]["output_parent"]
+          config["default_params"] && config["default_params"]["output_parent"]
 				else
 					output_parent
 				end
 			package = 
-				if config.has_key?("package")
+				if config["default_params"] && config["default_params"]["package"]
 					config["default_params"]["package"]
 				else
 					package
 				end
-			type = 
+			type =
 				if not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
-					type = Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0')
+					Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0')
 					type.to_s
-				elsif config.has_key?("type")
-					config["default_params"]["type"]
-				else
+			  elsif config["default_params"] && config["default_params"]["type"]
+          config["default_params"]["type"]
+ 				else
 					type
 				end
 			schema = 
