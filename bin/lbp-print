@@ -64,7 +64,7 @@ module LbpPrintCLI
 					schema_full = Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0')	
 					## get number, e.g. 1.0.0
 					schema_full.to_s.split("-").last
-				elsif config.has_key?("schema")
+				elsif config["default_params"] && config["default_params"]["schema"]
 					config["default_params"]["schema"]
 				else
 					schema
