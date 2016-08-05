@@ -5,7 +5,6 @@ require 'open-uri'
 require 'thor'
 require 'yaml'
 require 'nokogiri'
-require 'pry'
 
 module LbpPrintCLI
 	class Core < Thor
@@ -24,7 +23,7 @@ module LbpPrintCLI
 		end
 		desc "tex", "creates latex output"
 		option :p, :type => :boolean
-		def tex (filename, output_parent="examples", package="lbp-print-xslt", type="critical", schema="1.0.0")
+		def tex (filename, output_parent=nil, package=nil, type=nil, schema=nil)
 
 			# Initialize config file
 			home_dir = ENV['HOME']
@@ -38,27 +37,35 @@ module LbpPrintCLI
 			# Get parameters
 
 			output_parent =
-				if config["default_params"] && config["default_params"]["output_parent"]
+				if output_parent != nil
+					output_parent = output_parent
+				elsif config["default_params"] && config["default_params"]["output_parent"]
 					config["default_params"] && config["default_params"]["output_parent"]
 				else
-					output_parent
+					output_parent = "examples"
 				end
 			package =
-				if config["default_params"] && config["default_params"]["package"]
+				if package != nil
+					package = package
+				elsif config["default_params"] && config["default_params"]["package"]
 					config["default_params"]["package"]
 				else
-					package
+					package = "lbp-print-xslt"
 				end
 			type =
-				if not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
+				if type != nil
+					type = type
+				elsif not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
 					Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').to_s
 				elsif config["default_params"] && config["default_params"]["type"]
 					config["default_params"]["type"]
 				else
-					type
+					type = "critical"
 				end
 			schema =
-				if not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
+				if schema != nil
+					schema = schema
+				elsif not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
 					#get schema id, e.g lbp-critical-1.0.0
 					schema_full = Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0')
 					## get number, e.g. 1.0.0
@@ -66,7 +73,7 @@ module LbpPrintCLI
 				elsif config["default_params"] && config["default_params"]["schema"]
 					config["default_params"]["schema"]
 				else
-					schema
+					schema = "1.0.0"
 				end
 
 			puts "==============================="
