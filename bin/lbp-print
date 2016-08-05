@@ -23,7 +23,11 @@ module LbpPrintCLI
 		end
 		desc "tex", "creates latex output"
 		option :p, :type => :boolean
-		def tex (filename, output_parent=nil, package=nil, type=nil, schema=nil)
+		option :output_parent, :default => "examples"
+		option :package, :default => "lbp-print-xslt"
+		option :type, :default => "critical"
+		option :schema, :default => "1.0.0"
+		def tex (filename)
 
 			# Initialize config file
 			home_dir = ENV['HOME']
@@ -42,7 +46,7 @@ module LbpPrintCLI
 				elsif config["default_params"] && config["default_params"]["output_parent"]
 					config["default_params"] && config["default_params"]["output_parent"]
 				else
-					output_parent = "examples"
+					options["output_parent"]
 				end
 			package =
 				if package != nil
@@ -50,7 +54,7 @@ module LbpPrintCLI
 				elsif config["default_params"] && config["default_params"]["package"]
 					config["default_params"]["package"]
 				else
-					package = "lbp-print-xslt"
+					options["package"]
 				end
 			type =
 				if type != nil
@@ -73,7 +77,7 @@ module LbpPrintCLI
 				elsif config["default_params"] && config["default_params"]["schema"]
 					config["default_params"]["schema"]
 				else
-					schema = "1.0.0"
+					options[:schema]
 				end
 
 			puts "==============================="
