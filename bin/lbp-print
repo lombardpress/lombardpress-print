@@ -36,14 +36,14 @@ module LbpPrintCLI
 			xslt_base = File.expand_path(config['xslt_base'])
 
 			# Get parameters
-			
-			output_parent = 
+
+			output_parent =
 				if config["default_params"] && config["default_params"]["output_parent"]
-          config["default_params"] && config["default_params"]["output_parent"]
+					config["default_params"] && config["default_params"]["output_parent"]
 				else
 					output_parent
 				end
-			package = 
+			package =
 				if config["default_params"] && config["default_params"]["package"]
 					config["default_params"]["package"]
 				else
@@ -52,23 +52,23 @@ module LbpPrintCLI
 			type =
 				if not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
 					Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').to_s
-			  elsif config["default_params"] && config["default_params"]["type"]
-          config["default_params"]["type"]
- 				else
+				elsif config["default_params"] && config["default_params"]["type"]
+					config["default_params"]["type"]
+				else
 					type
 				end
-			schema = 
+			schema =
 				if not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
 					#get schema id, e.g lbp-critical-1.0.0
-					schema_full = Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0')	
+					schema_full = Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0')
 					## get number, e.g. 1.0.0
 					schema_full.to_s.split("-").last
 				elsif config["default_params"] && config["default_params"]["schema"]
 					config["default_params"]["schema"]
 				else
 					schema
-				end			
-			
+				end
+
 			puts "==============================="
 			puts "Output base is: #{output_base}"
 			puts "XSLT base is: #{xslt_base}"
@@ -115,7 +115,7 @@ module LbpPrintCLI
 		def tex_clean (file_full_path)
 			#stream edit for unwanted spaces
 			puts "Begin removing unwanted spaces"
-			`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' -e 's/} ,/},/g' -e 's/	 / /g' #{file_full_path}`
+			`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' -e 's/} ,/},/g' -e 's/		 / /g' #{file_full_path}`
 			puts "unwanted spaces removed"
 		end
 	end
