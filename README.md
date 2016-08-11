@@ -100,8 +100,8 @@ An example with some of the optional parameters specified would look like this:
 
 The precedence of defining the optional parameters are the following:
 1. If the value can be indicated in the XML-file, get them. That is the case for:
-   - `--type`, which is given in the `/TEI/text[1]/@type` attribute, i.e. the `@type` attribute of the first `text`-element (the highest level text element, sibling of `teiHeader`)
-   - `--schema`, which is given as the numeric value after the last dash in `/TEI/teiHeader/encodingDesc[1]/schemaRef/@n`. So for example `lbp-critical-1.0.0` would yield `1.0.0`.
+  * `--type`, which is given in the `/TEI/text[1]/@type` attribute, i.e. the `@type` attribute of the first `text`-element (the highest level text element, sibling of `teiHeader`)
+  * `--schema`, which is given as the numeric value after the last dash in `/TEI/teiHeader/encodingDesc[1]/schemaRef/@n`. So for example `lbp-critical-1.0.0` would yield `1.0.0`.
 2. If the value is given in the config file (~/.lbp-print/config.yaml), use that.
 3. If the optional parameters have a value, use that.
 4. If no optional parameter is given, use the default.
