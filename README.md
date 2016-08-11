@@ -12,31 +12,52 @@ Make sure you have LaTeX installed. For a Mac, we suggest installing MacTex
 
 ## Installation
 
-To install the lbp-print cli, run:
+To install the lbp-print cli from soucrce, follow these steps:
 
-    $ gem specific_install https://github.com/lombardpress/lbp-print.git 
+Clone the repo
+    
+    $ git clone https://github.com/lombardpress/lbp-print.git
 
-Then, 
+Enter the cloned repo
 
     $ cd lbp-print
+
+Build the gem with either:
+
+    $ rake build
+
+or
+
+    $ gem build lbp-print.gemspec
+
+If you built with rake install as follows
+
+    $ gem install pkg/lbp-print-0.1.0.gem
+
+If you built with gem install as follows
+
+    $ gem install lbp-print-0.1.0.gem
+
+Once built, run bin/setup as followss
+
     $ bin/setup
 
-Set up will create a `~/.lbp-print` with the global config file aptly named `config.rb`
+Set up will create a `~/.lbp-print` with the global config file aptly named `config.yaml`
 
-In the newly created config file, you need to set two variables, `$output_base` and `$xslt_base`.
+In the newly created config file, you need to set two key value pairs, `output_base` and `xslt_base`.
 
-`$output_base` should point to the main directory in which you want to your tex files to be saved.
+`output_base` should point to the main directory in which you want to your tex files to be saved.
 
-`$output-base` should point to the main directory where you will install available xslt packages.
+`xslt_base` should point to the main directory where you will install available xslt packages.
 
 For example you can use the `lbp-print-xslt` for the generic lbp renderings.
 
-These stylesheets should be cloned into `$xslt_base` like so
+These stylesheets should be cloned into `xslt_base` like so
 
     cd <xslt_base>
     git clone git@github.com:jeffreycwitt/lbp-print-xslt.git
 
-Anyone else can make their own stylesheets and these can then be used by the community via lbp-print cli.
+Anyone else can make their own stylesheets and these can then be used by the community via lbp-print.
 
 ## Usage
 
@@ -44,11 +65,33 @@ Once set up, you can invoke a transformation as follows:
 
 `cd` into the directory containing the file you wish to convert, then run `lbp-print tex` with the appropriate parameters.
 
-    lbp-print tex <filename> <a-parent-folder-which-defaults-to-examples> <desired-xslt-package> <diplomatic/critical> <validating-schema-number-such-as0.0.0> 
+    lbp-print tex <filename> <output_parent> <package> <type> <schema> 
 
 So a real world example would be: 
 
     lbp-print tex penn_wdr-l4d18 rothwellcommentary lbp-print-xslt diplomatic 0.0.0 
+
+You can add the optin `-p` if you want to also run the `pdflatex` as part of the same command. This is useful if you want an pdf program like skim to auto update after every transformation.
+
+    lbp-print tex -p penn_wdr-l4d18 rothwellcommentary lbp-print-xslt diplomatic 0.0.0 
+
+Defaults are also set for every paramater but the first. These are: 
+
+    output_parent="examples", package="lbp-print-xslt", type="critical", schema="1.0.0"
+
+Thus, using existing defaults, it is possible to run a conversion with something as simple as:
+
+    lbp-print tex -p wdr-l4d18
+
+Personal defaults can be set in the `config.yaml` file as follows:
+
+    default_params: 
+      output_parent: examples
+      package: lbp-print-xslt
+      type: critical
+      schema: 1.0.0
+
+Note that type and schema will first attempt to be to retrieved from the source document. If not type or schema designation is found, these values will then be retrieved from the `default_params` key
 
 ## Known Available XSLT packages
 
