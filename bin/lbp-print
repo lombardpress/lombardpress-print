@@ -22,11 +22,11 @@ module LbpPrintCLI
 			sourceversion=`git describe --tags --always`
 		end
 		desc "tex", "creates latex output"
-		option :p, :type => :boolean
-		option :output_parent, :default => "examples"
-		option :package, :default => "lbp-print-xslt"
-		option :type, :default => "critical"
-		option :schema, :default => "1.0.0"
+		option :pdf_output, :type => :boolean, :desc => "If this is given, the tex-file will be compiled with pdflatex."
+		option :output_parent, :default => "examples", :alias => "-o", :desc => "A directory name inside the `output_base` directory where the files will be put."
+		option :package, :default => "lbp-print-xslt", :alias => "-p", :desc => "The xslt package used for processing the XML file. This package must be a directory in the `xslt_base` directory."
+		option :type, :default => "critical", :alias => "-t", :desc => "Indicate whether the processor converts a file encoded according to the diplomatic of critical LBP schema."
+		option :schema, :default => "1.0.0", :alias => "-s", :desc => "Indicate which version of the LBP schema the XML is compliant with."
 		def tex (filename)
 
 			# Initialize config file
@@ -39,15 +39,13 @@ module LbpPrintCLI
 			xslt_base = File.expand_path(config['xslt_base'])
 
 			# Get parameters
-
 			output_parent =
-				if output_parent != nil
-					output_parent = output_parent
-				elsif config["default_params"] && config["default_params"]["output_parent"]
-					config["default_params"] && config["default_params"]["output_parent"]
+				if config["default_params"] && config["default_params"]["output_parent"]
+					config["default_params"]["output_parent"]
 				else
 					options["output_parent"]
 				end
+
 			package =
 				if package != nil
 					package = package
@@ -56,6 +54,7 @@ module LbpPrintCLI
 				else
 					options["package"]
 				end
+
 			type =
 				if type != nil
 					type = type
@@ -64,8 +63,9 @@ module LbpPrintCLI
 				elsif config["default_params"] && config["default_params"]["type"]
 					config["default_params"]["type"]
 				else
-					type = "critical"
+					options["type"]
 				end
+
 			schema =
 				if schema != nil
 					schema = schema
@@ -77,7 +77,7 @@ module LbpPrintCLI
 				elsif config["default_params"] && config["default_params"]["schema"]
 					config["default_params"]["schema"]
 				else
-					options[:schema]
+					options["schema"]
 				end
 
 			puts "==============================="
