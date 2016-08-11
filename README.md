@@ -63,35 +63,56 @@ Anyone else can make their own stylesheets and these can then be used by the com
 
 Once set up, you can invoke a transformation as follows:
 
-`cd` into the directory containing the file you wish to convert, then run `lbp-print tex` with the appropriate parameters.
+`cd` into the directory containing the file you wish to convert, then run `lbp-print tex` with the appropriate parameters. The require parameters are just the name of the file to be converted:
 
-    lbp-print tex <filename> <output_parent> <package> <type> <schema> 
+    lbp-print tex <filename>
 
-So a real world example would be: 
+The script also takes the following optional parameters:
 
-    lbp-print tex penn_wdr-l4d18 rothwellcommentary lbp-print-xslt diplomatic 0.0.0 
+``` 
+Options:
+  [--pdf-output], [--no-pdf-output]  # If this is given, the tex-file will be 
+                                     # compiled with pdflatex.
+  [--output-parent=OUTPUT_PARENT]    # A directory name inside the `output_base` 
+                                     # directory where the files will be put.
+                                     # Default: examples
+  [--package=PACKAGE]                # The xslt package used for processing the 
+                                     # XML file. This package must be a 
+                                     # directory in the `xslt_base` directory.
+                                     # Default: lbp-print-xslt
+  [--type=TYPE]                      # Indicate whether the processor converts a 
+                                     # file encoded according to the diplomatic 
+                                     # of critical LBP schema.
+                                     # Default: critical
+  [--schema=SCHEMA]                  # Indicate which version of the LBP schema 
+                                     # the XML is compliant with.
+                                     # Default: 1.0.0
+```
 
-You can add the optin `-p` if you want to also run the `pdflatex` as part of the same command. This is useful if you want an pdf program like skim to auto update after every transformation.
+So a minimal real world example would be: 
 
-    lbp-print tex -p penn_wdr-l4d18 rothwellcommentary lbp-print-xslt diplomatic 0.0.0 
+    lbp-print tex penn_wdr-l4d18 
+    
+An example with some of the optional parameters specified would look like this:
 
-Defaults are also set for every paramater but the first. These are: 
+    lbp-print tex penn_wdr-l4d18 --output-parent=rothwellcommentary \\
+        --package=lbp-print-xslt --type=diplomatic --schema=0.0.0 
 
-    output_parent="examples", package="lbp-print-xslt", type="critical", schema="1.0.0"
+The precedence of defining the optional parameters are the following:
+1. If the value can be indicated in the XML-file, get them. That is the case for:
+  * `--type`, which is given in the `/TEI/text[1]/@type` attribute, i.e. the `@type` attribute of the first `text`-element (the highest level text element, sibling of `teiHeader`)
+  * `--schema`, which is given as the numeric value after the last dash in `/TEI/teiHeader/encodingDesc[1]/schemaRef/@n`. So for example `lbp-critical-1.0.0` would yield `1.0.0`.
+2. If the value is given in the config file (~/.lbp-print/config.yaml), use that.
+3. If the optional parameters have a value, use that.
+4. If no optional parameter is given, use the default.
 
-Thus, using existing defaults, it is possible to run a conversion with something as simple as:
-
-    lbp-print tex -p wdr-l4d18
-
-Personal defaults can be set in the `config.yaml` file as follows:
+The defaults in the config-file are set up as follows:
 
     default_params: 
       output_parent: examples
       package: lbp-print-xslt
       type: critical
       schema: 1.0.0
-
-Note that type and schema will first attempt to be to retrieved from the source document. If not type or schema designation is found, these values will then be retrieved from the `default_params` key
 
 ## Known Available XSLT packages
 
