@@ -71,7 +71,7 @@ The script also takes the following optional parameters:
 
 ```
 Options:
-  [--pdf-output=BOOLEAN]  # If this is given, the tex-file will be
+  [--pdf-output], [--no-pdf-output]  # If this is given, the tex-file will be
                                      # compiled with pdflatex.
                                      # Default: false
   [--output-parent=OUTPUT_PARENT]    # A directory name inside the `output_base`
