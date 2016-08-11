@@ -22,11 +22,11 @@ module LbpPrintCLI
 			sourceversion=`git describe --tags --always`
 		end
 		desc "tex", "creates latex output"
-		option :pdf_output, :type => :boolean, :desc => "If this is given, the tex-file will be compiled with pdflatex."
-		option :output_parent, :default => "examples", :alias => "-o", :desc => "A directory name inside the `output_base` directory where the files will be put."
-		option :package, :default => "lbp-print-xslt", :alias => "-p", :desc => "The xslt package used for processing the XML file. This package must be a directory in the `xslt_base` directory."
-		option :type, :default => "critical", :alias => "-t", :desc => "Indicate whether the processor converts a file encoded according to the diplomatic of critical LBP schema."
-		option :schema, :default => "1.0.0", :alias => "-s", :desc => "Indicate which version of the LBP schema the XML is compliant with."
+		option :pdf_output, :type => :boolean, :alias => "-pdf", :desc => "If this is given, the tex-file will be compiled with pdflatex."
+		option :output_parent, :alias => "-o", :desc => "A directory name inside the `output_base` directory where the files will be put."
+		option :package, :alias => "-p", :desc => "The xslt package used for processing the XML file. This package must be a directory in the `xslt_base` directory."
+		option :type, :alias => "-t", :desc => "Indicate whether the processor converts a file encoded according to the diplomatic of critical LBP schema."
+		option :schema, :alias => "-s", :desc => "Indicate which version of the LBP schema the XML is compliant with."
 		def tex (filename)
 
 			# Initialize config file
@@ -40,35 +40,37 @@ module LbpPrintCLI
 
 			# Get parameters
 			output_parent =
-				if config["default_params"] && config["default_params"]["output_parent"]
+				if options["output_parent"]
+					options["output_parent"]
+				elsif config["default_params"] && config["default_params"]["output_parent"]
 					config["default_params"]["output_parent"]
 				else
-					options["output_parent"]
+					"examples"
 				end
 
 			package =
-				if package != nil
-					package = package
+				if options["package"]
+					option["package"]
 				elsif config["default_params"] && config["default_params"]["package"]
 					config["default_params"]["package"]
 				else
-					options["package"]
+					"lbp-print-xslt"
 				end
 
 			type =
-				if type != nil
-					type = type
+				if options["type"]
+					options["type"]
 				elsif not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
 					Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').to_s
 				elsif config["default_params"] && config["default_params"]["type"]
 					config["default_params"]["type"]
 				else
-					options["type"]
+					"critical"
 				end
 
 			schema =
-				if schema != nil
-					schema = schema
+				if options["schema"]
+					options["schema"]
 				elsif not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
 					#get schema id, e.g lbp-critical-1.0.0
 					schema_full = Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0')
@@ -77,7 +79,7 @@ module LbpPrintCLI
 				elsif config["default_params"] && config["default_params"]["schema"]
 					config["default_params"]["schema"]
 				else
-					options["schema"]
+					"1.0.0"
 				end
 
 			puts "==============================="
@@ -116,7 +118,7 @@ module LbpPrintCLI
 			self.tex_clean(file_full_path)
 
 			# render pdf
-			if options[:p]
+			if options[:pdf_output]
 				Dir.chdir(output_dir + "/#{filename}/")
 				puts "Creating PDF"
 				`pdflatex #{file_full_path}`

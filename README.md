@@ -15,7 +15,7 @@ Make sure you have LaTeX installed. For a Mac, we suggest installing MacTex
 To install the lbp-print cli from soucrce, follow these steps:
 
 Clone the repo
-    
+
     $ git clone https://github.com/lombardpress/lbp-print.git
 
 Enter the cloned repo
@@ -69,46 +69,48 @@ Once set up, you can invoke a transformation as follows:
 
 The script also takes the following optional parameters:
 
-``` 
+```
 Options:
-  [--pdf-output], [--no-pdf-output]  # If this is given, the tex-file will be 
+  [--pdf-output], [--no-pdf-output]  # If this is given, the tex-file will be
                                      # compiled with pdflatex.
-  [--output-parent=OUTPUT_PARENT]    # A directory name inside the `output_base` 
+                                     # Default: false
+  [--output-parent=OUTPUT_PARENT]    # A directory name inside the `output_base`
                                      # directory where the files will be put.
                                      # Default: examples
-  [--package=PACKAGE]                # The xslt package used for processing the 
-                                     # XML file. This package must be a 
+  [--package=PACKAGE]                # The xslt package used for processing the
+                                     # XML file. This package must be a
                                      # directory in the `xslt_base` directory.
                                      # Default: lbp-print-xslt
-  [--type=TYPE]                      # Indicate whether the processor converts a 
-                                     # file encoded according to the diplomatic 
+  [--type=TYPE]                      # Indicate whether the processor converts a
+                                     # file encoded according to the diplomatic
                                      # of critical LBP schema.
                                      # Default: critical
-  [--schema=SCHEMA]                  # Indicate which version of the LBP schema 
+  [--schema=SCHEMA]                  # Indicate which version of the LBP schema
                                      # the XML is compliant with.
                                      # Default: 1.0.0
 ```
 
-So a minimal real world example would be: 
+So a minimal real world example would be:
 
-    lbp-print tex penn_wdr-l4d18 
-    
+    lbp-print tex penn_wdr-l4d18
+
 An example with some of the optional parameters specified would look like this:
 
     lbp-print tex penn_wdr-l4d18 --output-parent=rothwellcommentary \\
-        --package=lbp-print-xslt --type=diplomatic --schema=0.0.0 
+        --package=lbp-print-xslt --type=diplomatic --schema=0.0.0
 
 The precedence of defining the optional parameters are the following:
-1. If the value can be indicated in the XML-file, get them. That is the case for:
+
+1. If the optional parameters have a value, use that.
+2. If the value can be indicated in the XML-file, get them. That is the case for:
   * `--type`, which is given in the `/TEI/text[1]/@type` attribute, i.e. the `@type` attribute of the first `text`-element (the highest level text element, sibling of `teiHeader`)
   * `--schema`, which is given as the numeric value after the last dash in `/TEI/teiHeader/encodingDesc[1]/schemaRef/@n`. So for example `lbp-critical-1.0.0` would yield `1.0.0`.
-2. If the value is given in the config file (~/.lbp-print/config.yaml), use that.
-3. If the optional parameters have a value, use that.
+3. If the value is given in the config file (~/.lbp-print/config.yaml), use that.
 4. If no optional parameter is given, use the default.
 
 The defaults in the config-file are set up as follows:
 
-    default_params: 
+    default_params:
       output_parent: examples
       package: lbp-print-xslt
       type: critical
@@ -129,4 +131,3 @@ Anyone can create custom xslt-latex packages that can be used by this command li
 ## License
 
 The gem is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
