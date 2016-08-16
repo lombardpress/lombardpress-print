@@ -29,22 +29,22 @@ module LbpPrintCLI
 		option :schema, :alias => "-s", :desc => "Indicate which version of the LBP schema the XML is compliant with."
 		def tex (filename)
 
-      # Sanity check on the file argument
-      filename =
-        if filename.split(".").last == "xml"
-          filename_base = filename.split("/").last.split(".").first
-          filename = filename
-        elsif not filename.include? "."
-          filename_base = filename
-          filename = "#{filename}.xml"
-        else
-          raise ArgumentError, "The `filename` argument must have the extension `.xml` or nothing. It was #{filename}"
-        end
+			# Sanity check on the file argument
+			filename =
+				if filename.split(".").last == "xml"
+					filename_base = filename.split("/").last.split(".").first
+					filename = filename
+				elsif not filename.include? "."
+					filename_base = filename
+					filename = "#{filename}.xml"
+				else
+					raise ArgumentError, "The `filename` argument must have the extension `.xml` or nothing. It was #{filename}"
+				end
 
 			# Initialize config file
 			home_dir = ENV['HOME']
-			config_file = "#{home_dir}/.lbp-print/config.yaml"
-			config = YAML::load_file( config_file )
+			config_file = File.join(home_dir, ".lbp-print", "config.yaml")
+			config = YAML::load_file(config_file)
 
 			# Get config data
 			output_base = File.expand_path(config['output_base'])
@@ -98,16 +98,16 @@ module LbpPrintCLI
 			puts "Output base is: #{output_base}"
 			puts "XSLT base is: #{xslt_base}"
 
-			output_dir = File.expand_path("#{output_base}/#{output_parent}")
+			output_dir = File.expand_path(File.join(output_base, output_parent))
 			puts "Output directory is: #{output_dir}"
 
-			file_full_path = File.expand_path("#{output_dir}/#{filename_base}/#{filename_base}.tex")
+			file_full_path = File.expand_path(File.join(output_dir, filename_base, "#{filename_base}.tex"))
 
 			validating_schema = schema
 			transcription_type = type
 
-			xslt_directory = "#{xslt_base}/#{package}"
-			xslt = "#{xslt_base}/#{package}/#{validating_schema}/#{transcription_type}.xslt"
+			xslt_directory = File.join(xslt_base, package)
+			xslt = File.join(xslt_directory, validating_schema, "#{transcription_type}.xslt")
 			xslt_package_version_number = self.xslt_package_version_number(xslt_directory)
 
 			puts "==============================="
@@ -129,7 +129,7 @@ module LbpPrintCLI
 
 			# render pdf
 			if options[:pdf_output]
-				Dir.chdir(output_dir + filename_base)
+				Dir.chdir(File.join(output_dir, filename_base))
 				puts "Creating PDF"
 				`pdflatex #{file_full_path}`
 			end
