@@ -29,6 +29,18 @@ module LbpPrintCLI
 		option :schema, :alias => "-s", :desc => "Indicate which version of the LBP schema the XML is compliant with."
 		def tex (filename)
 
+      # Sanity check on the file argument
+      filename =
+        if filename.split(".").last == "xml"
+          filename_base = filename.split("/").last.split(".").first
+          filename = filename
+        elsif not filename.include? "."
+          filename_base = filename
+          filename = "#{filename}.xml"
+        else
+          raise ArgumentError, "The `filename` argument must have the extension `.xml` or nothing. It was #{filename}"
+        end
+
 			# Initialize config file
 			home_dir = ENV['HOME']
 			config_file = "#{home_dir}/.lbp-print/config.yaml"
@@ -60,8 +72,8 @@ module LbpPrintCLI
 			type =
 				if options["type"]
 					options["type"]
-				elsif not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
-					Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').to_s
+				elsif not Nokogiri::XML(open(File.expand_path(filename))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
+					Nokogiri::XML(open(File.expand_path(filename))).xpath("/tei:TEI/tei:text[1]/@type", 'tei' => 'http://www.tei-c.org/ns/1.0').to_s
 				elsif config["default_params"] && config["default_params"]["type"]
 					config["default_params"]["type"]
 				else
@@ -71,9 +83,9 @@ module LbpPrintCLI
 			schema =
 				if options["schema"]
 					options["schema"]
-				elsif not Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
+				elsif not Nokogiri::XML(open(File.expand_path(filename))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0').empty?
 					#get schema id, e.g lbp-critical-1.0.0
-					schema_full = Nokogiri::XML(open(File.expand_path("#{filename}.xml"))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0')
+					schema_full = Nokogiri::XML(open(File.expand_path(filename))).xpath("/tei:TEI/tei:teiHeader[1]/tei:encodingDesc[1]/tei:schemaRef[1]/@n", 'tei' => 'http://www.tei-c.org/ns/1.0')
 					## get number, e.g. 1.0.0
 					schema_full.to_s.split("-").last
 				elsif config["default_params"] && config["default_params"]["schema"]
@@ -89,8 +101,7 @@ module LbpPrintCLI
 			output_dir = File.expand_path("#{output_base}/#{output_parent}")
 			puts "Output directory is: #{output_dir}"
 
-			file_basename = File.basename(filename)
-			file_full_path = File.expand_path("#{output_dir}/#{file_basename}/#{file_basename}.tex")
+			file_full_path = File.expand_path("#{output_dir}/#{filename_base}/#{filename_base}.tex")
 
 			validating_schema = schema
 			transcription_type = type
@@ -110,8 +121,7 @@ module LbpPrintCLI
 
 			puts "==============================="
 			puts "Begin TEI to LaTeX conversion"
-			#`saxon "-s:#{filename}.xml" "-xsl:#{xslt}" "-o:#{output_dir}/#{filename}/$filename.tex" "conversionversion=$conversionversion" "sourceversion=$sourceversion";`
-			`saxon "-s:#{filename}.xml" "-xsl:#{xslt}" "-o:#{file_full_path}" "conversionversion=#{xslt_package_version_number}" "sourceversion=#{source_doc_version_number}";`
+			`saxon "-s:#{filename}" "-xsl:#{xslt}" "-o:#{file_full_path}" "conversionversion=#{xslt_package_version_number}" "sourceversion=#{source_doc_version_number}";`
 			puts "creating file: #{file_full_path}"
 			puts "End TEI to LaTeX conversion"
 			puts "==============================="
@@ -119,7 +129,7 @@ module LbpPrintCLI
 
 			# render pdf
 			if options[:pdf_output]
-				Dir.chdir(output_dir + "/#{filename}/")
+				Dir.chdir(output_dir + filename_base)
 				puts "Creating PDF"
 				`pdflatex #{file_full_path}`
 			end
