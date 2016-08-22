@@ -62,7 +62,7 @@ module LbpPrintCLI
 
 			package =
 				if options["package"]
-					option["package"]
+					options["package"]
 				elsif config["default_params"] && config["default_params"]["package"]
 					config["default_params"]["package"]
 				else
