@@ -9,6 +9,10 @@ require 'nokogiri'
 require 'forwardable'
 require 'lbp'
 
+# Don't allow downloaded files to be created as StringIO. Force a tempfile to be created.
+# this is required, but the StringIO can't be used as a file in the saxon processing command
+OpenURI::Buffer.send :remove_const, 'StringMax' if OpenURI::Buffer.const_defined?('StringMax')
+OpenURI::Buffer.const_set 'StringMax', 0
 
 
 module LbpprintCLI
@@ -42,7 +46,6 @@ module LbpprintCLI
 				resource = Lbp::Resource.find(filename)
 				filename_base = filename
 				file_resource = resource.canonical_transcription.resource.file.file
-
 				filename = file_resource.path
 			else
 				# Sanity check on the file argument
