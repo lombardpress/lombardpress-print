@@ -5,12 +5,13 @@ require 'open-uri'
 require 'thor'
 require 'yaml'
 require 'nokogiri'
+require 'lbp'
 
-module LbpPrintCLI
+module LbpprintCLI
 	class Core < Thor
 		desc "version", "ask for lbp-print version"
 		def version
-			puts Lbp::Print::VERSION
+			puts Lbpprint::Print::VERSION
 		end
 		desc "xslt_package_version_number", "get xslt package version number"
 		def xslt_package_version_number(package_path)
@@ -23,23 +24,34 @@ module LbpPrintCLI
 		end
 		desc "tex", "creates latex output"
 		option :pdf_output, :type => :boolean, :alias => "-pdf", :desc => "If this is given, the tex-file will be compiled with pdflatex."
+		option :cloud, :type => :boolean, :alias => "-c", :desc => "If cloud flag is present, the lbp-script will grab the designated file by its resource url or resource short id, rather than looking for the file on the local file system"
 		option :output_parent, :alias => "-o", :desc => "A directory name inside the `output_base` directory where the files will be put."
 		option :package, :alias => "-p", :desc => "The xslt package used for processing the XML file. This package must be a directory in the `xslt_base` directory."
 		option :type, :alias => "-t", :desc => "Indicate whether the processor converts a file encoded according to the diplomatic of critical LBP schema."
 		option :schema, :alias => "-s", :desc => "Indicate which version of the LBP schema the XML is compliant with."
 		def tex (filename)
 
-			# Sanity check on the file argument
-			filename =
-				if filename.split(".").last == "xml"
-					filename_base = filename.split("/").last.split(".").first
-					filename = filename
-				elsif not filename.include? "."
-					filename_base = filename
-					filename = "#{filename}.xml"
-				else
-					raise ArgumentError, "The `filename` argument must have the extension `.xml` or nothing. It was #{filename}"
-				end
+			# Get file resource
+			if options[:cloud]
+				## at present filename should be short id at will only work for expression id (not manifestation or transcription id)
+				## right now this is only set to work for expressions at the structureItem level
+				#resource = Lbp::Resource.find(filename)
+				#filename_base = filename
+				#file_resource = resource.canonical_transcription.resource.file.file
+				#filename << file_resource.read
+			else
+				# Sanity check on the file argument
+				filename =
+					if filename.split(".").last == "xml"
+						filename_base = filename.split("/").last.split(".").first
+						filename = filename
+					elsif not filename.include? "."
+						filename_base = filename
+						filename = "#{filename}.xml"
+					else
+						raise ArgumentError, "The `filename` argument must have the extension `.xml` or nothing. It was #{filename}"
+					end
+			end
 
 			# Initialize config file
 			home_dir = ENV['HOME']
@@ -103,7 +115,9 @@ module LbpPrintCLI
 
 			file_full_path = File.expand_path(File.join(output_dir, filename_base, "#{filename_base}.tex"))
 
+			puts "schema number used: #{schema}"
 			validating_schema = schema
+			puts "schema type used: #{type}"
 			transcription_type = type
 
 			xslt_directory = File.join(xslt_base, package)
@@ -145,4 +159,4 @@ module LbpPrintCLI
 end
 
 
-LbpPrintCLI::Core.start(ARGV)
+LbpprintCLI::Core.start(ARGV)

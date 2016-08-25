@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Lbp::Print do
+describe Lbpprint::Print do
   it 'has a version number' do
-    expect(Lbp::Print::VERSION).not_to be nil
+    expect(Lbpprint::Print::VERSION).not_to be nil
   end
 
   it 'does something useful' do

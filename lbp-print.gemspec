@@ -5,7 +5,7 @@ require 'lbp/print/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "lbp-print"
-  spec.version       = Lbp::Print::VERSION
+  spec.version       = Lbpprint::Print::VERSION
   spec.authors       = ["Jeffrey C. Witt"]
   spec.email         = ["jeffreycwitt@gmail.com"]
 
@@ -33,4 +33,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency "thor"
   spec.add_runtime_dependency "nokogiri", "~> 1.6"
+  spec.add_runtime_dependency 'lbp', "~> 0.1.1"
 end

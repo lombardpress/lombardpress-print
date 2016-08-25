@@ -1,4 +1,4 @@
-# Lbp::Print
+# Lbpprint::Print
 
 This is a command line gem designed to be used with a separately installed saxon processor, a compatible xslt transformation package, and LaTeX processor.
 
@@ -12,7 +12,7 @@ Make sure you have LaTeX installed. For a Mac, we suggest installing MacTex
 
 ## Installation
 
-To install the lbp-print cli from soucrce, follow these steps:
+To install the lbp-print cli from source, follow these steps:
 
 Clone the repo
 
