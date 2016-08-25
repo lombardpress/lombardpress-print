@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 require "bundler/setup"
-require "lbp/print"
+require "lbpprint/print"
 require 'open-uri'
 require 'thor'
 require 'yaml'

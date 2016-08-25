@@ -1,4 +1,4 @@
-require "lbp/print/version"
+require "lbpprint/print/version"
 
 module Lbpprint
   module Print
