@@ -6,6 +6,7 @@ require 'thor'
 require 'yaml'
 require 'nokogiri'
 require 'lbp'
+require 'forwardable'
 
 module LbpprintCLI
 	class Core < Thor
