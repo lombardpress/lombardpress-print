@@ -5,8 +5,11 @@ require 'open-uri'
 require 'thor'
 require 'yaml'
 require 'nokogiri'
-require 'lbp'
+## forwardable depency is mysterious, it is invoked in the lbp library and should be required there instead of here, but until now has not appear to be necessary in other uses of library
 require 'forwardable'
+require 'lbp'
+
+
 
 module LbpprintCLI
 	class Core < Thor
@@ -36,10 +39,11 @@ module LbpprintCLI
 			if options[:cloud]
 				## at present filename should be short id at will only work for expression id (not manifestation or transcription id)
 				## right now this is only set to work for expressions at the structureItem level
-				#resource = Lbp::Resource.find(filename)
-				#filename_base = filename
-				#file_resource = resource.canonical_transcription.resource.file.file
-				#filename << file_resource.read
+				resource = Lbp::Resource.find(filename)
+				filename_base = filename
+				file_resource = resource.canonical_transcription.resource.file.file
+
+				filename = file_resource.path
 			else
 				# Sanity check on the file argument
 				filename =
