@@ -144,7 +144,8 @@ module LbpPrintCLI
 				's/ :/:/g',                # ' :' => ':'
 				's/} ,/},/g',              # '} ,' => '},'
 				's/	*//g',               # '[tab]*' => ''
-				's/ \(\\\edtext\)/\1/g',   # ' \edtext{}' => '\edtext{}'
+				's/ \(\\\edtext{}\)/\1/g', # ' \edtext{}' => '\edtext{}'
+				's/}\(\\\edtext{[^}]\)/} \1/g', # '}\edtext{...' => '} \edtext'
 			]
 			joined_pattern = patterns.map { |i| '-e ' + "'#{i}'" }.join(' ')
 			sed_command = "sed -i.bak #{joined_pattern} #{file_full_path}"
