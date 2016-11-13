@@ -137,9 +137,28 @@ module LbpPrintCLI
 		desc "tex_clean", "removes unwanted spaces from output tex file"
 		def tex_clean (file_full_path)
 			#stream edit for unwanted spaces
-			puts "Begin removing unwanted spaces"
-			`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' -e 's/} ,/},/g' -e 's/		 / /g' #{file_full_path}`
-			puts "unwanted spaces removed"
+			patterns = [
+				's/ \{1,\}/ /g',           # ' {' => '{'
+				's/{ /{/g',                # '{ ' => '{'
+				's/ }/}/g',                # ' }' => '}'
+				's/ :/:/g',                # ' :' => ':'
+				's/} ,/},/g',              # '} ,' => '},'
+				's/	*//g',               # '[tab]*' => ''
+				's/ \(\\\edtext{}\)/\1/g', # ' \edtext{}' => '\edtext{}'
+				's/}\(\\\edtext{[^}]\)/} \1/g', # '}\edtext{...' => '} \edtext'
+				's/ \([.,?!]\)/\1/g',      # ' [punctuation]' => '[punctuation]'
+			]
+			joined_pattern = patterns.map { |i| '-e ' + "'#{i}'" }.join(' ')
+			sed_command = "sed -i.bak #{joined_pattern} #{file_full_path}"
+
+			puts "Trying to remove whitespace..."
+			system sed_command
+			if $? != 0
+				puts "Whitespace cleanup failed."
+			else
+				puts "Whitespace cleanup finished successfully."
+			end
+
 		end
 	end
 end
