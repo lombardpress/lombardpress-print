@@ -9,6 +9,7 @@ require 'nokogiri'
 require 'forwardable'
 require 'lbp'
 
+
 # Don't allow downloaded files to be created as StringIO. Force a tempfile to be created.
 # this is required, but the StringIO can't be used as a file in the saxon processing command
 OpenURI::Buffer.send :remove_const, 'StringMax' if OpenURI::Buffer.const_defined?('StringMax')
@@ -160,6 +161,7 @@ module LbpprintCLI
 		def tex_clean (file_full_path)
 			#stream edit for unwanted spaces
 			puts "Begin removing unwanted spaces"
+			puts file_full_path
 			`sed -i.bak -e 's/ \{1,\}/ /g' -e 's/{ /{/g' -e 's/ }/}/g' -e 's/ :/:/g' -e 's/} ,/},/g' -e 's/		 / /g' #{file_full_path}`
 			puts "unwanted spaces removed"
 		end
