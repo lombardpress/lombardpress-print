@@ -34,6 +34,7 @@ module LbpprintCLI
 		desc "tex", "creates latex output"
 		option :pdf_output, :type => :boolean, :alias => "-pdf", :desc => "If this is given, the tex-file will be compiled with pdflatex."
 		option :cloud, :type => :boolean, :alias => "-c", :desc => "If cloud flag is present, the lbp-script will grab the designated file by its resource url or resource short id, rather than looking for the file on the local file system"
+		option :output_base, :desc => "The base output directory."
 		option :output_parent, :alias => "-o", :desc => "A directory name inside the `output_base` directory where the files will be put."
 		option :package, :alias => "-p", :desc => "The xslt package used for processing the XML file. This package must be a directory in the `xslt_base` directory."
 		option :type, :alias => "-t", :desc => "Indicate whether the processor converts a file encoded according to the diplomatic of critical LBP schema."
@@ -68,7 +69,12 @@ module LbpprintCLI
 			config = YAML::load_file(config_file)
 
 			# Get config data
-			output_base = File.expand_path(config['output_base'])
+			output_base =
+				if options["output_base"]
+					File.expand_path(options["output_base"])
+				else
+					File.expand_path(config['output_base'])
+				end
 			xslt_base = File.expand_path(config['xslt_base'])
 
 			# Get parameters
