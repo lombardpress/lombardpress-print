@@ -38,7 +38,7 @@ If you built with gem install as follows
 
     $ gem install lbp-print-0.1.0.gem
 
-Once built, run bin/setup as followss
+Once built, run bin/setup as follows
 
     $ bin/setup
 
