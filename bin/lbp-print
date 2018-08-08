@@ -158,7 +158,7 @@ module LbpprintCLI
 			if options[:pdf_output]
 				Dir.chdir(File.join(output_dir, filename_base))
 				puts "Creating PDF"
-				`pdflatex #{file_full_path}`
+				`latexmk #{file_full_path}`
 			end
 		end
 		desc "tex_clean", "removes unwanted spaces from output tex file"
