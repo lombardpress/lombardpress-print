@@ -171,6 +171,7 @@ module LbpprintCLI
 				's/ :/:/g',                # ' :' => ':'
 				's/} ,/},/g',              # '} ,' => '},'
 				's/	*//g',               # '[tab]*' => ''
+				's/ \(\\\footnote{}\)/\1/g', # ' \footnote{}' => '\footnote{}'
 				's/ \(\\\edtext{}\)/\1/g', # ' \edtext{}' => '\edtext{}'
 				's/}\(\\\edtext{[^}]\)/} \1/g', # '}\edtext{...' => '} \edtext'
 				's/ \([.,?!]\)/\1/g',      # ' [punctuation]' => '[punctuation]'
