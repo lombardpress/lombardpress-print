@@ -30,10 +30,11 @@ module LbpprintCLI
 		desc "source_doc_version_number", "get source doc version number"
 		def source_doc_version_number(filename="dev")
 			#sourceversion=`git describe --tags --always`
-			sourceversion=`shasum #{filename}`
-			ipfsversion=`ipfs add #{filename}`
-			ipfshash = ipfsversion.split(" ")[1]
-			return sourceversion[0...8] + "/" + ipfshash[0...8]
+			# sourceversion=`shasum #{filename}`
+			# ipfsversion=`ipfs add #{filename}`
+			# ipfshash = ipfsversion.split(" ")[1]
+			# return sourceversion[0...8] + "/" + ipfshash[0...8]
+			return sourceversion[0...8]
 		end
 		desc "tex", "creates latex output"
 		option :pdf_output, :type => :boolean, :alias => "-pdf", :desc => "If this is given, the tex-file will be compiled with pdflatex."
